@@ -25,10 +25,15 @@ class LensScrape {
       .firstElementWithTagName("p")
       .text
 
-    PatentData(reference,title,summary)
+    summaryDoc.close
+
+    val fullTextDoc = new WebDoc("https://www.lens.org/lens/patent/"+reference+"/fulltext")
+    val fullText = fullTextDoc.elementWithId("contents")
+      .allElementsAtPath("div[@class='para_text']").map(_.getText).toList
+    PatentData(reference,title,summary,fullText)
   }
 
-  case class PatentData(reference:String,title:String,summary:String)
+  case class PatentData(reference:String,title:String,summary:String,fullText:List[String])
 }
 
 class WebDoc(url:String) {
@@ -60,14 +65,13 @@ class WebDoc(url:String) {
   }
 
   def allElementsWithTagName(tagName:String) = {
-    currentElement = currentElement.findElement(By.tagName(tagName))
-    this
+    currentElement.findElements(By.tagName(tagName)).asScala
   }
   def allElementsWithClassName(className:String) = {
     currentElement.findElements(By.className(className)).asScala
   }
   def allElementsAtPath(path:String) = {
-    currentElement.findElements(By.xpath(path))
+    currentElement.findElements(By.xpath(path)).asScala
   }
 
 }
