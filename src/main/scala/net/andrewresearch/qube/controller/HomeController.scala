@@ -1,6 +1,6 @@
 package net.andrewresearch.qube.controller
 
-import net.andrewresearch.qube.service.SeleniumScrape
+import net.andrewresearch.qube.service.{LensScrape}
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.{PathVariable, RequestMethod, RequestMapping, RestController}
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.{PathVariable, RequestMethod, Req
 @RestController
 class HomeController {
 
-  @Autowired var scraper:SeleniumScrape = null
+  @Autowired var lensScrape:LensScrape = null
 
   def logger = LoggerFactory.getLogger(this.getClass)
 
@@ -25,7 +25,7 @@ class HomeController {
   @RequestMapping(value=Array("/scrape/{ref}"),method=Array(RequestMethod.GET))
   def scrape(@PathVariable ref:String) = {
     logger.info("Testing Selenium Scrape")
-    scraper.lensTest(ref)
+    lensScrape.forReference(ref)
   }
 
 }

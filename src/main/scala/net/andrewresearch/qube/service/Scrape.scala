@@ -1,51 +1,73 @@
 package net.andrewresearch.qube.service
 
-import com.mongodb.Mongo
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
-import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait, ExpectedCondition}
 import org.openqa.selenium.{WebDriver, By, WebElement}
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.JavaConverters._
+
 /**
  * Created by andrew on 19/10/2015.
  */
 
 @Component
-class SeleniumScrape {
-
-  @Autowired var mongo:Mongo = null
-
-  val driver = new HtmlUnitDriver()
+class LensScrape {
 
   def logger = LoggerFactory.getLogger(this.getClass)
 
-  def getPage(url:String) = driver.get(url)
-  def getTitle = driver.getTitle
+  def forReference(reference:String) = {
+    logger.info("Starting Lens Scrape for: "+reference)
+    val summaryDoc = new WebDoc("https://www.lens.org/lens/patent/"+reference)
+    val title = summaryDoc.title
+    val summary = summaryDoc.elementWithId("patentFrontPage")
+      .firstElementWithClassName("last")
+      .firstElementWithTagName("p")
+      .text
 
-  def getElementById(elementId:String):WebElement = driver.findElementById(elementId)
-
-  def typeInElement(element:WebElement,text:String) = element.sendKeys(text)
-  def submitForm(element:WebElement) = element.submit()
-
-  def close = driver.quit()
-
-  def lensTest(reference:String) = {
-    logger.info("Starting Lens Test")
-    getPage("https://www.lens.org/lens/patent/"+reference)
-    val frontPage = getElementById("patentFrontPage")
-    val abs = frontPage.findElement(By.className("last")).findElements(By.xpath("p")).asScala.map(_.getText)
-    logger.debug("Found "+abs.size+" elements")
-    val summary = abs.mkString(" \r")
-    val title = getTitle
-    logger.info("Page title is: "+title)
-    //close
-    val newData = PatentData(reference,title,summary)
-
+    PatentData(reference,title,summary)
   }
 
   case class PatentData(reference:String,title:String,summary:String)
+}
+
+class WebDoc(url:String) {
+  var driver:WebDriver = new HtmlUnitDriver()
+  driver.get(url)
+  var currentElement:WebElement = driver.findElement(By.tagName("html"))
+
+  def text = currentElement.getText
+  def title = driver.getTitle
+  def element = currentElement
+  def close = driver.quit()
+
+  def elementWithId(id:String) = {
+    currentElement = driver.findElement(By.id(id))
+    this
+  }
+
+  def firstElementWithTagName(tagName:String) = {
+    currentElement = currentElement.findElement(By.tagName(tagName))
+    this
+  }
+  def firstElementWithClassName(className:String) = {
+    currentElement = currentElement.findElement(By.className(className))
+    this
+  }
+  def firstElementAtPath(path:String) = {
+    currentElement = currentElement.findElement(By.xpath(path))
+    this
+  }
+
+  def allElementsWithTagName(tagName:String) = {
+    currentElement = currentElement.findElement(By.tagName(tagName))
+    this
+  }
+  def allElementsWithClassName(className:String) = {
+    currentElement.findElements(By.className(className)).asScala
+  }
+  def allElementsAtPath(path:String) = {
+    currentElement.findElements(By.xpath(path))
+  }
 
 }
