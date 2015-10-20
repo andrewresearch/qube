@@ -1,0 +1,69 @@
+buildscript {
+    ext {
+        springBootVersion = '1.2.7.RELEASE'
+        scalaVersion = '2.11.7'
+    }
+    repositories {
+        mavenCentral()
+        maven { url "http://repo.spring.io/snapshot" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+jar {
+    baseName = 'qube'
+    version = '0.1.0-SNAPSHOT'
+}
+
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/main/")
+    }
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+
+    compile("org.scala-lang:scala-library:${scalaVersion}")
+    compile("org.scala-lang:scala-compiler:${scalaVersion}")
+
+    compile('com.fasterxml.jackson.module:jackson-module-scala_2.11:2.6.1')
+    //compile('org.jsoup:jsoup:1.8.3')
+    compile('org.seleniumhq.selenium:selenium-java:2.48.2')
+
+
+
+    //compile('org.apache.commons:commons-lang3:3.4')
+
+    //compile('org.mongodb:mongo-java-driver:3.0.0')
+    //compile("org.springframework.data:spring-data-mongodb:1.7.0.RELEASE")
+
+    //compile("org.springframework.boot:spring-boot-starter-security")
+    // compile("org.springframework.boot:spring-boot-starter-aop")
+
+    //testCompile("org.springframework.boot:spring-boot-starter-test")
+    //testCompile("junit:junit")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
