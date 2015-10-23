@@ -2,7 +2,9 @@ package net.andrewresearch.qube.config
 
 import java.util
 
-import com.mongodb.{MongoCredential, ServerAddress, Mongo, MongoClient}
+import com.mongodb.{Mongo, ServerAddress, MongoCredential, MongoClient}
+
+//import com.mongodb.{MongoCredential, ServerAddress, Mongo, MongoClient}
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Bean, Configuration}
@@ -30,7 +32,7 @@ class MongoConfig extends AbstractMongoConfiguration {
   def mongo: Mongo = {
     val server = new ServerAddress(env.getProperty("db.host"), Integer.valueOf(env.getProperty("db.port")))
     var credentials: util.ArrayList[MongoCredential] = new util.ArrayList()
-    credentials.add(MongoCredential.createMongoCRCredential(env.getProperty("db.username"), env.getProperty("db.database"), env.getProperty("db.password").toCharArray))
+    credentials.add(MongoCredential.createCredential(env.getProperty("db.username"), env.getProperty("db.database"), env.getProperty("db.password").toCharArray))
     new MongoClient(server, credentials)
   }
 }

@@ -1,8 +1,11 @@
 package net.andrewresearch.qube.service
 
+import net.andrewresearch.qube.data.{PatentData, PatentDataRepo}
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.{WebDriver, By, WebElement}
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 
 import scala.collection.JavaConverters._
@@ -30,10 +33,10 @@ class LensScrape {
     val fullTextDoc = new WebDoc("https://www.lens.org/lens/patent/"+reference+"/fulltext")
     val fullText = fullTextDoc.elementWithId("contents")
       .allElementsAtPath("div[@class='para_text']").map(_.getText).toList
-    PatentData(reference,title,summary,fullText)
+    PatentData(reference,title,summary,fullText.asJava)
   }
 
-  case class PatentData(reference:String,title:String,summary:String,fullText:List[String])
+
 }
 
 class WebDoc(url:String) {
